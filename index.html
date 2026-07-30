@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro Silhouette AI Generator</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+.canvas-container { cursor: grab; }
+.canvas-container:active { cursor: grabbing; }
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+.glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+/* Professional Transparent Checkerboard Pattern */
+.checkerboard-bg {
+    background-color: #ffffff;
+    background-image:
+    linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
+    linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
+    linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+</style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col">
+<header class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center z-10 relative">
+<div class="flex items-center gap-3">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a48,48,0,0,1-92.15,19.16L51.35,163.6A8,8,0,0,0,56,176H200a8,8,0,0,0,5.66-13.66l-29.4-29.4A48,48,0,0,1,176,88Z"></path></svg>
+<h1 class="text-xl font-bold tracking-wide">Pro Silhouette AI</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-md border border-slate-700">
+<label for="api-key-input" class="text-xs text-slate-300 font-semibold">Gemini API Key:</label>
+<input type="password" id="api-key-input" placeholder="Enter API Key" class="bg-slate-900 text-white text-xs px-2 py-1 rounded border border-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 w-44">
+</div>
+<div class="text-xs text-slate-400 font-medium">Professional Vector Engine</div>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<aside class="w-96 glass-panel border-r border-gray-200 p-5 flex flex-col gap-5 overflow-y-auto shrink-0 shadow-lg z-10 relative">
+<div class="space-y-3">
+<h2 class="text-sm font-bold text-gray-700 uppercase tracking-wider">1. Configuration</h2>
+<div class="flex flex-col gap-3">
+<div class="flex gap-3">
+<div class="flex-1">
+<label class="block text-xs font-semibold text-gray-600 mb-1">Niche</label>
+<select id="niche-select" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all">
+<option value="None">None</option>
+<option value="General">General / Mixed</option>
+<option value="Animals & Wildlife">Animals & Wildlife</option>
+<option value="Architecture & Buildings">Architecture & Buildings</option>
+<option value="Arts & Crafts">Arts & Crafts</option>
+<option value="Aviation & Space">Aviation & Space</option>
+<option value="Business & Finance">Business & Finance</option>
+<option value="Education & School">Education & School</option>
+<option value="Fantasy & Mythical">Fantasy & Mythical</option>
+<option value="Fashion & Clothing">Fashion & Clothing</option>
+<option value="Food & Beverage">Food & Beverage</option>
+<option value="Hobbies & Leisure">Hobbies & Leisure</option>
+<option value="Holidays & Occasions">Holidays & Occasions</option>
+<option value="Human Figures & Poses">Human Figures & Poses</option>
+<option value="Medical & Health">Medical & Health</option>
+<option value="Military & Weapons">Military & Weapons</option>
+<option value="Music & Audio">Music & Audio</option>
+<option value="Nature & Landscapes">Nature & Landscapes</option>
+<option value="Professions & Jobs">Professions & Jobs</option>
+<option value="Religion & Spirituality">Religion & Spirituality</option>
+<option value="Science & Technology">Science & Technology</option>
+<option value="Shapes & Symbols">Shapes & Symbols</option>
+<option value="Sports & Fitness">Sports & Fitness</option>
+<option value="Tools & Construction">Tools & Construction</option>
+<option value="Vehicles & Transport">Vehicles & Transport</option>
+<option value="Vintage & Retro">Vintage & Retro</option>
+<option value="Zodiac & Astrology">Zodiac & Astrology</option>
+</select>
+</div>
+<div class="w-1/3">
+<label class="block text-xs font-semibold text-gray-600 mb-1">Grid</label>
+<select id="grid-select" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all">
+<option value="1 (Single Design)">1x1</option>
+<option value="2x2 Grid (4 Designs)">2x2</option>
+<option value="3x3 Grid (9 Designs)">3x3</option>
+<option value="4x4 Grid (16 Designs)">4x4</option>
+<option value="5x5 Grid (25 Designs)">5x5</option>
+<option value="6x6 Grid (36 Designs)">6x6</option>
+<option value="7x7 Grid (49 Designs)">7x7</option>
+<option value="8x8 Grid (64 Designs)">8x8</option>
+<option value="9x9 Grid (81 Designs)">9x9</option>
+<option value="10x10 Grid (100 Designs)">10x10</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-gray-600 mb-1">Subcategory</label>
+<select id="sub-niche-select" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all">
+<!-- Populated dynamically via JS -->
+</select>
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-gray-600 mb-1">Reference Image (Optional)</label>
+<div class="border-2 border-dashed border-gray-300 rounded-md p-3 text-center hover:bg-gray-50 transition-colors relative">
+<input type="file" id="image-upload" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+<div id="upload-placeholder" class="text-xs text-gray-500 pointer-events-none flex flex-col items-center gap-1">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+<span>Click or drop image to upload</span>
+</div>
+<img id="image-preview" class="hidden max-h-24 mx-auto rounded object-contain pointer-events-none" />
+</div>
+</div>
+</div>
+<div class="space-y-3 pt-3 border-t border-gray-100">
+<div class="flex justify-between items-end">
+<h2 class="text-sm font-bold text-gray-700 uppercase tracking-wider">2. AI Prompt</h2>
+<span id="prompt-progress-text" class="text-xs font-bold text-indigo-600 hidden">0%</span>
+</div>
+<button id="btn-auto-prompt" class="w-full bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 p-2 rounded-md text-sm font-semibold transition-all flex justify-center items-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+Auto Generate Structured Prompt
+</button>
+<!-- Progress bar for prompt -->
+<div id="prompt-progress-container" class="w-full bg-gray-200 rounded-full h-1.5 hidden">
+<div id="prompt-progress-bar" class="bg-indigo-600 h-1.5 rounded-full transition-all duration-200" style="width: 0%"></div>
+</div>
+<textarea id="prompt-area" rows="6" class="w-full p-3 border border-gray-300 rounded-md text-xs font-mono text-gray-700 focus:ring-2 focus:ring-slate-900 outline-none transition-all" placeholder="Your structured prompt will appear here. You can also edit it manually..."></textarea>
+</div>
+<div class="space-y-3 pt-3 border-t border-gray-100 mt-auto">
+<h2 class="text-sm font-bold text-gray-700 uppercase tracking-wider">3. Generate & Refine</h2>
+<button id="btn-generate-image" class="w-full bg-slate-900 text-white hover:bg-slate-800 p-3 rounded-md text-sm font-semibold shadow-md transition-all flex justify-center items-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+Generate Silhouette Design
+</button>
+<button id="btn-download-png" class="w-full bg-blue-600 text-white hover:bg-blue-700 p-3 rounded-md text-sm font-semibold shadow transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2" disabled>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+Download High-Quality PNG
+</button>
+<button id="btn-reset-all" class="w-full bg-white text-red-600 border border-red-200 hover:bg-red-50 p-2 rounded-md text-sm font-semibold shadow-sm transition-all flex justify-center items-center gap-2 mt-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+Reset All Settings
+</button>
+</div>
+</aside>
+<section class="flex-1 bg-gray-200 relative overflow-hidden flex flex-col">
+<!-- Toolbar for Canvas -->
+<div class="absolute top-4 right-4 z-20 flex gap-2">
+<button id="btn-zoom-in" class="bg-white p-2 rounded shadow hover:bg-gray-50 text-gray-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg></button>
+<button id="btn-zoom-out" class="bg-white p-2 rounded shadow hover:bg-gray-50 text-gray-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg></button>
+<button id="btn-reset-view" class="bg-white p-2 rounded shadow hover:bg-gray-50 text-gray-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4v5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg></button>
+</div>
+<!-- Loader Overlay -->
+<div id="loading-overlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-30 hidden flex-col justify-center items-center">
+<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mb-3"></div>
+<p id="loading-text" class="text-sm font-semibold text-slate-800 tracking-wide">Generating Masterpiece...</p>
+</div>
+<!-- Interactive Canvas Container -->
+<div id="canvas-container" class="canvas-container w-full h-full flex justify-center items-center relative overflow-hidden checkerboard-bg">
+<!-- We use a wrapper for transforms to keep canvas rendering crisp -->
+<div id="transform-wrapper" class="origin-center transition-transform duration-75 ease-out flex justify-center items-center">
+<canvas id="main-canvas" class="block"></canvas>
+</div>
+</div>
+<!-- Hidden canvas for original unedited image data retention -->
+<canvas id="hidden-canvas" class="hidden"></canvas>
+</section>
+</main>
+<!-- Modal for Messages -->
+<div id="message-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex justify-center items-center">
+<div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+<h3 id="modal-title" class="text-lg font-bold text-gray-900 mb-2">Notice</h3>
+<p id="modal-desc" class="text-sm text-gray-600 mb-5">Something happened.</p>
+<button onclick="closeModal()" class="bg-slate-900 text-white px-5 py-2 rounded font-semibold text-sm hover:bg-slate-800">OK</button>
+</div>
+</div>
+<script>
+// API Configuration
+const apiKeyInput = document.getElementById('api-key-input');
+// Load saved API key from localStorage if available
+if (localStorage.getItem('gemini_api_key')) {
+    apiKeyInput.value = localStorage.getItem('gemini_api_key');
+}
+apiKeyInput.addEventListener('input', () => {
+    localStorage.setItem('gemini_api_key', apiKeyInput.value.trim());
+});
+
+function getApiKey() {
+    return apiKeyInput.value.trim();
+}
+
+// State Variables
+let referenceImageBase64 = null;
+let originalImageData = null; // Store original generated pixels
+let generatedWidth = 1024;
+let generatedHeight = 1024;
+// Pan & Zoom State
+let scale = 1;
+let panX = 0;
+let panY = 0;
+let isDragging = false;
+let startDragX = 0;
+let startDragY = 0;
+
+// DOM Elements
+const uploadInput = document.getElementById('image-upload');
+const uploadPreview = document.getElementById('image-preview');
+const uploadPlaceholder = document.getElementById('upload-placeholder');
+const btnAutoPrompt = document.getElementById('btn-auto-prompt');
+const promptArea = document.getElementById('prompt-area');
+const promptProgressText = document.getElementById('prompt-progress-text');
+const promptProgressBar = document.getElementById('prompt-progress-bar');
+const promptProgressContainer = document.getElementById('prompt-progress-container');
+const btnGenerate = document.getElementById('btn-generate-image');
+const btnDownloadPng = document.getElementById('btn-download-png');
+const btnResetAll = document.getElementById('btn-reset-all');
+const nicheSelect = document.getElementById('niche-select');
+const subNicheSelect = document.getElementById('sub-niche-select');
+const canvasContainer = document.getElementById('canvas-container');
+const transformWrapper = document.getElementById('transform-wrapper');
+const mainCanvas = document.getElementById('main-canvas');
+const mainCtx = mainCanvas.getContext('2d', { willReadFrequently: true });
+const hiddenCanvas = document.getElementById('hidden-canvas');
+const hiddenCtx = hiddenCanvas.getContext('2d', { willReadFrequently: true });
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingText = document.getElementById('loading-text');
+
+// Modal Helpers
+function showModal(title, desc) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-desc').textContent = desc;
+    document.getElementById('message-modal').classList.remove('hidden');
+}
+function closeModal() {
+    document.getElementById('message-modal').classList.add('hidden');
+}
+function showLoading(text) {
+    loadingText.textContent = text;
+    loadingOverlay.classList.remove('hidden');
+    loadingOverlay.classList.add('flex');
+}
+function hideLoading() {
+    loadingOverlay.classList.add('hidden');
+    loadingOverlay.classList.remove('flex');
+}
+
+const subcategories = {
+"General": ["General Silhouette", "Abstract Shape", "Random Object", "Minimalist Logo", "Mascot Outline"],
+"Animals & Wildlife": ["Cats", "Dogs", "Lions", "Tigers", "Elephants", "Bears", "Deer", "Wolves", "Foxes", "Rabbits", "Monkeys", "Gorillas", "Snakes", "Lizards", "Frogs", "Turtles", "Dolphins", "Whales", "Sharks", "Fish", "Eagles", "Owls", "Parrots", "Butterflies", "Spiders", "Horses", "Cows", "Pigs"],
+"Architecture & Buildings": ["City Skylines", "Houses", "Castles", "Bridges", "Towers", "Lighthouses", "Barns", "Windmills", "Skyscrapers", "Cabins", "Churches", "Mosques", "Temples", "Ruins", "Monuments", "Fences", "Gates", "Pyramids"],
+"Arts & Crafts": ["Paintbrushes", "Palettes", "Easels", "Sewing Machines", "Needles & Thread", "Scissors", "Yarn Balls", "Knitting Needles", "Pottery Vases", "Origami", "Canvas", "Pencils"],
+"Aviation & Space": ["Airplanes", "Helicopters", "Hot Air Balloons", "Rockets", "Satellites", "Astronauts", "Planets", "Stars", "Galaxies", "UFOs", "Drones", "Fighter Jets", "Space Shuttles", "Parachutes", "Meteors"],
+"Business & Finance": ["Briefcases", "Money & Coins", "Calculators", "Graphs & Charts", "Handshakes", "Piggy Banks", "Scales of Justice", "Gears", "Lightbulbs (Ideas)", "Credit Cards", "Safes", "Barcodes"],
+"Education & School": ["Books & Notebooks", "Graduation Caps", "Apples", "Pencils & Pens", "Microscopes", "Globes", "Blackboards", "Backpacks", "Diplomas", "Rulers", "Calculators", "Compasses", "School Buses"],
+"Fantasy & Mythical": ["Dragons", "Unicorns", "Mermaids", "Fairies", "Pegasi", "Phoenixes", "Griffins", "Wizards", "Witches", "Magic Wands", "Swords", "Crowns", "Goblins", "Trolls", "Centaurs"],
+"Fashion & Clothing": ["Dresses", "Suits", "T-Shirts", "Hats & Caps", "Shoes", "Sneakers", "High Heels", "Glasses & Sunglasses", "Bags & Purses", "Jewelry & Rings", "Watches", "Ties", "Coats", "Socks", "Gloves"],
+"Food & Beverage": ["Burgers", "Pizza", "Hotdogs", "Sushi", "Tacos", "Steak", "Coffee Mugs", "Wine Glasses", "Beer Mugs", "Cocktails", "Cakes", "Ice Cream", "Fruits", "Vegetables", "Cutlery", "Donuts", "Cupcakes", "Cheese"],
+"Hobbies & Leisure": ["Fishing Rods", "Tents & Camping", "Gardening Tools", "Books (Reading)", "Cameras (Photography)", "Board Games", "Video Game Controllers", "Cooking Utensils", "Dancing Shoes"],
+"Holidays & Occasions": ["Christmas Trees", "Santa Claus", "Halloween Pumpkins", "Ghosts", "Easter Bunnies", "Valentine Hearts", "Thanksgiving Turkeys", "New Year Fireworks", "Birthdays Cakes", "Wedding Rings", "Balloons", "Presents"],
+"Human Figures & Poses": ["Walking", "Running", "Jumping", "Sitting", "Standing", "Dancing", "Yoga & Meditation", "Hugging", "Holding Hands", "Business Professionals", "Children", "Families", "Crowds", "Silhouettes Side Profile"],
+"Medical & Health": ["Stethoscopes", "Syringes", "Pills & Capsules", "Medical Crosses", "Anatomical Hearts", "Brains", "Lungs", "Bones & Skulls", "DNA Strands", "Wheelchairs", "Ambulances", "Microscopes", "Bandages"],
+"Military & Weapons": ["Pistols", "Rifles", "Swords", "Knives", "Bows & Arrows", "Tanks", "Helicopters", "Fighter Jets", "Submarines", "Soldiers", "Shields", "Bombs", "Grenades", "Cannons", "Helmets"],
+"Music & Audio": ["Acoustic Guitars", "Electric Guitars", "Pianos & Keyboards", "Drums", "Violins", "Saxophones", "Microphones", "Headphones", "Speakers", "Musical Notes", "Vinyl Records", "Cassette Tapes", "Trumpets", "Harps"],
+"Nature & Landscapes": ["Pine Trees", "Oak Trees", "Forests", "Mountains", "Hills", "Rivers", "Lakes", "Oceans & Waves", "Sun", "Moon", "Clouds", "Rain & Lightning", "Snowflakes", "Cacti", "Flowers", "Leaves & Vines"],
+"Professions & Jobs": ["Doctors", "Nurses", "Police Officers", "Firefighters", "Teachers", "Construction Workers", "Chefs", "Farmers", "Mechanics", "Lawyers", "Scientists", "Astronauts", "Pilots", "Artists"],
+"Religion & Spirituality": ["Christian Crosses", "Islamic Crescents", "Stars of David", "Om Symbols", "Buddha Figures", "Lotus Flowers", "Churches", "Mosques", "Temples", "Angels", "Doves", "Praying Hands", "Rosaries"],
+"Science & Technology": ["Desktop Computers", "Laptops", "Smartphones", "Tablets", "Smartwatches", "Robots", "Circuit Boards", "Atoms", "Telescopes", "Satellites", "Drones", "VR Headsets", "Microchips", "Batteries"],
+"Shapes & Symbols": ["Circles", "Squares", "Triangles", "Stars", "Hearts", "Arrows", "Checkmarks", "Crosses (X)", "Infinity Symbols", "Peace Signs", "Yin Yang", "Shields", "Badges", "Ribbons", "Speech Bubbles"],
+"Sports & Fitness": ["Soccer Balls & Players", "Basketballs & Hoops", "Baseballs & Bats", "Footballs", "Tennis Rackets", "Golf Clubs", "Swimmers", "Runners", "Bicycles & Cyclists", "Weightlifting & Dumbbells", "Martial Arts", "Skateboards", "Surfboards", "Bowling"],
+"Tools & Construction": ["Hammers", "Wrenches", "Screwdrivers", "Saws", "Drills", "Pliers", "Tape Measures", "Hard Hats", "Bricks", "Cranes", "Bulldozers", "Paint Brushes", "Gears", "Anvils"],
+"Vehicles & Transport": ["Sedan Cars", "Sports Cars", "Trucks", "Buses", "Vans", "Motorcycles", "Bicycles", "Scooters", "Trains & Locomotives", "Boats & Ships", "Submarines", "Airplanes", "Helicopters", "Tractors"],
+"Vintage & Retro": ["Typewriters", "Gramophones", "Pocket Watches", "Old Telephones", "Cassette Tapes", "Floppy Disks", "Polaroid Cameras", "Classic Cars", "Penny Farthing Bicycles", "Pocket Compasses", "Wax Seals"],
+"Zodiac & Astrology": ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces", "Tarot Cards", "Crystal Balls", "Moons & Stars"]
+};
+
+function populateSubcategories() {
+    const niche = nicheSelect.value;
+    const subs = ["None"].concat(subcategories[niche] || []);
+    subNicheSelect.innerHTML = subs.map(s => `<option value="${s}">${s}</option>`).join("");
+}
+nicheSelect.addEventListener('change', populateSubcategories);
+populateSubcategories(); // Initialize subcategories on load
+
+// Handle Image Upload
+uploadInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        uploadPreview.src = event.target.result;
+        uploadPreview.classList.remove('hidden');
+        uploadPlaceholder.classList.add('hidden');
+        // Extract base64 without prefix
+        referenceImageBase64 = event.target.result.split(',')[1];
+    };
+    reader.readAsDataURL(file);
+});
+
+// Pan & Zoom Controls
+function updateTransform() {
+    transformWrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+}
+document.getElementById('btn-zoom-in').addEventListener('click', () => { scale = Math.min(scale + 0.2, 5); updateTransform(); });
+document.getElementById('btn-zoom-out').addEventListener('click', () => { scale = Math.max(scale - 0.2, 0.1); updateTransform(); });
+document.getElementById('btn-reset-view').addEventListener('click', () => { scale = 1; panX = 0; panY = 0; updateTransform(); });
+
+canvasContainer.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const zoomSensitivity = 0.001;
+    const delta = e.deltaY * -zoomSensitivity;
+    const newScale = Math.min(Math.max(scale + delta, 0.1), 10);
+    scale = newScale;
+    updateTransform();
+});
+
+canvasContainer.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startDragX = e.clientX - panX;
+    startDragY = e.clientY - panY;
+});
+
+window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    panX = e.clientX - startDragX;
+    panY = e.clientY - startDragY;
+    updateTransform();
+});
+
+window.addEventListener('mouseup', () => isDragging = false);
+
+btnAutoPrompt.addEventListener('click', async () => {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+        showModal("API Key Required", "Please enter your Gemini API Key in the top right header.");
+        return;
+    }
+
+    const niche = document.getElementById('niche-select').value;
+    const subNiche = document.getElementById('sub-niche-select').value;
+    const grid = document.getElementById('grid-select').value;
+    
+    btnAutoPrompt.disabled = true;
+    promptProgressContainer.classList.remove('hidden');
+    promptProgressText.classList.remove('hidden');
+    promptArea.value = "";
+    let progress = 0;
+    
+    const progressInterval = setInterval(() => {
+        progress += Math.floor(Math.random() * 5) + 1;
+        if (progress > 90) progress = 90;
+        promptProgressBar.style.width = `${progress}%`;
+        promptProgressText.textContent = `${progress}%`;
+    }, 300);
+
+    try {
+        const parts = [];
+        const systemPrompt = `You are an expert AI prompt engineer specializing in professional silhouette designs.
+Your task is to output ONLY the text of a highly structured, long, and detailed prompt meant for an image generation model.
+Requirements for the generated prompt:
+- Specify the design niche: ${niche} - ${subNiche}.
+- Grid configuration: ${grid}. If >1, describe how the canvas is divided into a grid.
+- MUST INCLUDE INSTRUCTIONS FOR VARIETY: If Grid is > 1, STRICTLY COMMAND the image AI to make EVERY SINGLE ITEM IN THE GRID UNIQUE. Force different poses, different angles, different sub-types, or different variations of the subject in each cell. NO DUPLICATES.
+- MUST INCLUDE INSTRUCTIONS FOR REGION-BASED STRUCTURE: Describe exactly what goes in the center, edges, top, bottom.
+- MUST INCLUDE INSTRUCTIONS FOR ISOLATION (NO GROUND): Explicitly state that there MUST BE NO ground line, floor, terrain, base, or drop shadows. The main subject(s) must be completely isolated and floating in pure white space.
+- MUST INCLUDE INSTRUCTIONS FOR EDGES AND LINES: Command "Adobe Illustrator pen tool style, flawless mathematically perfect bezier curves, minimal anchor points, extreme minimalism". For tech/vehicles, strictly command "flawless mathematically straight lines, perfect geometric circles, precise right angles, exact symmetry, no wobbly or jagged lines". For organic subjects, command "ultra-smooth, flowing continuous bezier curves".
+- MUST INCLUDE INSTRUCTIONS FOR JOINT/LAYER SEPARATION: Explicitly state to maintain negative space or distinct path separations where objects intersect (e.g., "leave a tiny white gap between the feet and the ground so they are separate layers").
+- MUST demand "true professional minimalist vector graphic style, ultra-crisp anti-aliased edges, zero pixelation, exact mathematical proportions."
+- The final image MUST BE pure black and white, white background, solid black foreground.
+Generate ONLY the detailed prompt string, nothing else.`;
+        
+        parts.push({ text: systemPrompt });
+        if (referenceImageBase64) {
+            parts.push({ text: "Use the attached image as the core compositional reference for the silhouette subjects." });
+            parts.push({
+                inlineData: { mimeType: "image/jpeg", data: referenceImageBase64 }
+            });
+        }
+        
+        const payload = {
+            contents: [{ role: "user", parts: parts }],
+        };
+        
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        clearInterval(progressInterval);
+        promptProgressBar.style.width = '100%';
+        promptProgressText.textContent = '100%';
+        
+        if (result.candidates && result.candidates[0].content.parts[0].text) {
+            let generatedPrompt = result.candidates[0].content.parts[0].text;
+            generatedPrompt = generatedPrompt.replace(/^```[a-z]*
+/i, "").replace(/```$/i, "").trim();
+            promptArea.value = generatedPrompt;
+        } else {
+            throw new Error("Invalid response format from prompt generator.");
+        }
+    } catch (error) {
+        clearInterval(progressInterval);
+        console.error(error);
+        showModal("Error", "Failed to generate prompt. Please check your API key or try again.");
+        promptProgressContainer.classList.add('hidden');
+        promptProgressText.classList.add('hidden');
+    } finally {
+        btnAutoPrompt.disabled = false;
+        setTimeout(() => {
+            promptProgressContainer.classList.add('hidden');
+            promptProgressText.classList.add('hidden');
+            promptProgressBar.style.width = '0%';
+        }, 2000);
+    }
+});
+
+btnGenerate.addEventListener('click', async () => {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+        showModal("API Key Required", "Please enter your Gemini API Key in the top right header.");
+        return;
+    }
+
+    let promptText = promptArea.value.trim();
+    if (!promptText) {
+        showModal("Missing Prompt", "Please enter a prompt or auto-generate one first.");
+        return;
+    }
+
+    promptText += "\n\nCRITICAL ENFORCEMENT: The final image MUST be a pure solid black silhouette on a pure solid white background. No grayscale shading, no gradients. The design MUST have ultra-smooth, perfectly anti-aliased edges. Absolutely NO pixelation, NO wobbly lines, NO jagged artifacts, and NO hand-drawn imperfections. Force mathematically perfect geometric shapes, exact symmetry, perfect circles, and flawless straight lines where applicable. True professional premium vector graphic style, exactly like Adobe Illustrator pen tool artwork with minimal anchor points. ABSOLUTELY NO GROUND, NO FLOOR, NO SHADOWS, AND NO BASE. The subject must be entirely isolated, floating against the pure white background. IF A GRID IS REQUESTED: EVERY SINGLE ITEM IN THE GRID MUST BE COMPLETELY UNIQUE. Vary the shape, pose, angle, or sub-type of each item. DO NOT repeat the exact same silhouette multiple times.";
+
+    showLoading("Generating AI Silhouette...");
+    btnGenerate.disabled = true;
+
+    try {
+        const payload = {
+            contents: [{
+                role: 'user',
+                parts: [{ text: promptText }]
+            }],
+            generationConfig: {
+                responseModalities: ['IMAGE'],
+                imageConfig: { aspectRatio: "1:1" }
+            },
+        };
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        
+        // Check for parts that contain inline data
+        let part = null;
+        if (result?.candidates?.[0]?.content?.parts) {
+            for (const p of result.candidates[0].content.parts) {
+                if (p.inlineData) {
+                    part = p;
+                    break;
+                }
+            }
+        }
+
+        if (!part) {
+            throw new Error("No image data found in response.");
+        }
+
+        const base64Data = part.inlineData.data;
+        const mimeType = part.inlineData.mimeType;
+        await loadImageToCanvas(`data:${mimeType};base64,${base64Data}`);
+
+        btnDownloadPng.disabled = false;
+        scale = 1; panX = 0; panY = 0; updateTransform();
+    } catch (error) {
+        console.error(error);
+        showModal("Generation Failed", "Could not generate image. Please check your API key or prompt.");
+    } finally {
+        hideLoading();
+        btnGenerate.disabled = false;
+    }
+});
+
+function loadImageToCanvas(dataUrl) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            generatedWidth = img.width;
+            generatedHeight = img.height;
+            mainCanvas.width = generatedWidth;
+            mainCanvas.height = generatedHeight;
+            hiddenCanvas.width = generatedWidth;
+            hiddenCanvas.height = generatedHeight;
+            mainCanvas.style.maxWidth = "800px";
+            mainCanvas.style.height = "auto";
+            hiddenCtx.drawImage(img, 0, 0);
+            originalImageData = hiddenCtx.getImageData(0, 0, generatedWidth, generatedHeight);
+            processEdges();
+            resolve();
+        };
+        img.src = dataUrl;
+    });
+}
+
+function processEdges() {
+    if (!originalImageData) return;
+    mainCtx.clearRect(0, 0, generatedWidth, generatedHeight);
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = generatedWidth;
+    tempCanvas.height = generatedHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.putImageData(originalImageData, 0, 0);
+    mainCtx.filter = 'none';
+    mainCtx.drawImage(tempCanvas, 0, 0);
+    thresholdCanvas(mainCtx, generatedWidth, generatedHeight);
+}
+
+function thresholdCanvas(ctx, width, height) {
+    const imgData = ctx.getImageData(0, 0, width, height);
+    const data = imgData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i+1];
+        const b = data[i+2];
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        let alpha;
+        if (lum > 245) {
+            alpha = 0;
+        } else if (lum < 15) {
+            alpha = 255;
+        } else {
+            alpha = 255 - lum;
+        }
+        data[i] = 0;
+        data[i+1] = 0;
+        data[i+2] = 0;
+        data[i+3] = alpha;
+    }
+    ctx.putImageData(imgData, 0, 0);
+}
+
+btnDownloadPng.addEventListener('click', () => {
+    const dataURL = mainCanvas.toDataURL("image/png");
+    const a = document.createElement('a');
+    a.href = dataURL;
+    a.download = `Silhouette_Pro_${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+});
+
+btnResetAll.addEventListener('click', () => {
+    nicheSelect.value = "None";
+    document.getElementById('grid-select').value = "1 (Single Design)";
+    populateSubcategories();
+    uploadInput.value = "";
+    uploadPreview.src = "";
+    uploadPreview.classList.add('hidden');
+    uploadPlaceholder.classList.remove('hidden');
+    referenceImageBase64 = null;
+    promptArea.value = "";
+    mainCtx.clearRect(0, 0, generatedWidth, generatedHeight);
+    hiddenCtx.clearRect(0, 0, generatedWidth, generatedHeight);
+    originalImageData = null;
+    btnDownloadPng.disabled = true;
+    scale = 1; panX = 0; panY = 0; updateTransform();
+});
+</script>
+</body>
+</html>
