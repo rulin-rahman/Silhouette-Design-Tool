@@ -84,16 +84,16 @@ body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
 <div class="w-1/3">
 <label class="block text-xs font-semibold text-gray-600 mb-1">Grid</label>
 <select id="grid-select" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-slate-900 outline-none transition-all">
-<option value="1 (Single Design)">1x1</option>
-<option value="2x2 Grid (4 Designs)">2x2</option>
-<option value="3x3 Grid (9 Designs)">3x3</option>
-<option value="4x4 Grid (16 Designs)">4x4</option>
-<option value="5x5 Grid (25 Designs)">5x5</option>
-<option value="6x6 Grid (36 Designs)">6x6</option>
-<option value="7x7 Grid (49 Designs)">7x7</option>
-<option value="8x8 Grid (64 Designs)">8x8</option>
-<option value="9x9 Grid (81 Designs)">9x9</option>
-<option value="10x10 Grid (100 Designs)">10x10</option>
+<option value="1x1">1x1 (Single Design)</option>
+<option value="2x2">2x2 (4 Designs)</option>
+<option value="3x3">3x3 (9 Designs)</option>
+<option value="4x4">4x4 (16 Designs)</option>
+<option value="5x5">5x5 (25 Designs)</option>
+<option value="6x6">6x6 (36 Designs)</option>
+<option value="7x7">7x7 (49 Designs)</option>
+<option value="8x8">8x8 (64 Designs)</option>
+<option value="9x9">9x9 (81 Designs)</option>
+<option value="10x10">10x10 (100 Designs)</option>
 </select>
 </div>
 </div>
@@ -150,12 +150,12 @@ Reset All Settings
 <section class="flex-1 bg-gray-200 relative overflow-hidden flex flex-col">
 <!-- Toolbar for Canvas -->
 <div class="absolute top-4 right-4 z-20 flex gap-2">
-<button id="btn-zoom-in" class="bg-white p-2 rounded shadow hover:bg-gray-50 text-gray-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg></button>
-<button id="btn-zoom-out" class="bg-white p-2 rounded shadow hover:bg-gray-50 text-gray-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg></button>
-<button id="btn-reset-view" class="bg-white p-2 rounded shadow hover:bg-gray-50 text-gray-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4v5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg></button>
+<button id="btn-zoom-in" aria-label="Zoom In" class="bg-white p-2 rounded shadow hover:bg-gray-50 text-gray-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg></button>
+<button id="btn-zoom-out" aria-label="Zoom Out" class="bg-white p-2 rounded shadow hover:bg-gray-50 text-gray-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg></button>
+<button id="btn-reset-view" aria-label="Reset View" class="bg-white p-2 rounded shadow hover:bg-gray-50 text-gray-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4v5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg></button>
 </div>
 <!-- Loader Overlay -->
-<div id="loading-overlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-30 hidden flex-col justify-center items-center">
+<div id="loading-overlay" role="status" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-30 hidden flex-col justify-center items-center">
 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mb-3"></div>
 <p id="loading-text" class="text-sm font-semibold text-slate-800 tracking-wide">Generating Masterpiece...</p>
 </div>
@@ -279,8 +279,13 @@ const subcategories = {
 
 function populateSubcategories() {
     const niche = nicheSelect.value;
-    const subs = ["None"].concat(subcategories[niche] || []);
-    subNicheSelect.innerHTML = subs.map(s => `<option value="${s}">${s}</option>`).join("");
+    // Get the list of subcategories for the selected niche. If not found, default to an empty array.
+    const subs = subcategories[niche] || [];
+    // Create the full list of options, always starting with "None".
+    const options = ["None", ...subs];
+
+    // Generate the HTML for the new options and update the dropdown.
+    subNicheSelect.innerHTML = options.map(s => `<option value="${s}">${s}</option>`).join("");
 }
 nicheSelect.addEventListener('change', populateSubcategories);
 populateSubcategories(); // Initialize subcategories on load
@@ -384,7 +389,7 @@ Generate ONLY the detailed prompt string, nothing else.`;
             contents: [{ role: "user", parts: parts }],
         };
         
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
         
         const response = await fetch(url, {
             method: 'POST',
@@ -451,7 +456,7 @@ btnGenerate.addEventListener('click', async () => {
             },
         };
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
         
         const response = await fetch(url, {
             method: 'POST',
@@ -561,7 +566,7 @@ btnDownloadPng.addEventListener('click', () => {
 
 btnResetAll.addEventListener('click', () => {
     nicheSelect.value = "None";
-    document.getElementById('grid-select').value = "1 (Single Design)";
+    document.getElementById('grid-select').value = "1x1";
     populateSubcategories();
     uploadInput.value = "";
     uploadPreview.src = "";
