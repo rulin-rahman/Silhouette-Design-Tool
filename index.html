@@ -182,6 +182,7 @@ Reset All Settings
 // API Configuration
 const apiKeyInput = document.getElementById('api-key-input');
 // Load saved API key from localStorage if available
+const modelSelect = document.getElementById('model-select');
 if (localStorage.getItem('gemini_api_key')) {
     apiKeyInput.value = localStorage.getItem('gemini_api_key');
 }
@@ -191,6 +192,10 @@ apiKeyInput.addEventListener('input', () => {
 
 function getApiKey() {
     return apiKeyInput.value.trim();
+}
+
+function getSelectedModel() {
+    return modelSelect.value;
 }
 
 // State Variables
@@ -219,6 +224,7 @@ const btnGenerate = document.getElementById('btn-generate-image');
 const btnDownloadPng = document.getElementById('btn-download-png');
 const btnResetAll = document.getElementById('btn-reset-all');
 const nicheSelect = document.getElementById('niche-select');
+
 const subNicheSelect = document.getElementById('sub-niche-select');
 const canvasContainer = document.getElementById('canvas-container');
 const transformWrapper = document.getElementById('transform-wrapper');
@@ -389,7 +395,8 @@ Generate ONLY the detailed prompt string, nothing else.`;
             contents: [{ role: "user", parts: parts }],
         };
         
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+        const model = getSelectedModel();
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
         
         const response = await fetch(url, {
             method: 'POST',
@@ -456,7 +463,8 @@ btnGenerate.addEventListener('click', async () => {
             },
         };
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+        const model = getSelectedModel();
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
         
         const response = await fetch(url, {
             method: 'POST',
